@@ -1,0 +1,31 @@
+# Gradle
+.gradle/
+local.properties
+build/
+**/build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Android / NDK
+.cxx/
+.externalNativeBuild/
+*.apk
+*.ap_
+*.aab
+
+# Signing — never commit
+keystore.properties
+*.jks
+*.keystore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Captured logs / temp
+*.log
+context.txt

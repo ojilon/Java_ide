@@ -1,0 +1,1 @@
+# Core module ProGuard rules

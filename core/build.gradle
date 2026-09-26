@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.ojilon.javaide.core'
+    compileSdk 36
+
+    ndkVersion "29.0.14206865"
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+
+        // Consumer ProGuard rules can be added later
+        consumerProguardFiles 'consumer-rules.pro'
+
+        ndk {
+            def abiProperty = project.findProperty("aurora.abiFilters") as String
+            if (abiProperty != null && !abiProperty.trim().isEmpty()) {
+                abiFilters.clear()
+                abiFilters.addAll(abiProperty.split(",").collect { it.trim() }.findAll { !it.isEmpty() })
+            }
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++23"
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // Placeholder for future C++ / JNI backend (easy to expand later)
+    // externalNativeBuild {
+    //     cmake {
+    //         path file("src/main/cpp/CMakeLists.txt")
+    //         version "3.22.1"
+    //     }
+    // }
+}
+
+dependencies {
+    // Keep core lean — pure Java / functional helpers + future JNI
+    implementation 'androidx.annotation:annotation:1.8.2'
+}
