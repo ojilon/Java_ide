@@ -25,4 +25,9 @@ public final class StringOps {
     public static String nullToEmpty(@Nullable String input) {
         return input == null ? "" : input;
     }
+
+    public static boolean containsIgnoreCase(@Nullable String haystack, @Nullable String needle) {
+        if (haystack == null || needle == null) return false;
+        return haystack.toLowerCase().contains(needle.toLowerCase());
+    }
 }

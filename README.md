@@ -16,7 +16,25 @@ Modern, clean re-implementation of the Java N-IDE concept for Android.
 | Module | Role |
 |--------|------|
 | `:app` | Launcher, UI, Android framework integration (OOP) |
-| `:core` | Functional helpers + future JNI bridge |
+| `:core` | Functional helpers + log parsing + future JNI bridge |
+
+## Package layout
+
+```
+app/
+  ui/                 ← Activities / Fragments (OOP)
+    editor/           ← source editor UI
+    project/          ← project explorer UI
+core/
+  functional/         ← pure helpers (StringOps, …)
+  log/                ← immutable LogLine + SearchCriteria (modernized)
+  jni/                ← NativeBridge (future C++ seams)
+```
+
+## Icons
+
+Temporary vector adaptive icons are in place so the project builds.  
+See **[ICONS.md](ICONS.md)** for the exact PNG names, densities, and how to replace them.
 
 ## Branch
 
@@ -32,4 +50,7 @@ Work happens on `modern-restructure`.
 
 ## Status
 
-Skeleton only. Selective port of useful modernizable features from the original project comes next.
+- Modern Gradle skeleton ✅
+- Icon placeholders + instructions ✅
+- Package structure + first functional ports (log parsing) ✅
+- Next: more selective modern ports / real editor surface
