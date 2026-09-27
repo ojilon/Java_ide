@@ -5,33 +5,31 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.ojilon.javaide.R;
 import com.ojilon.javaide.core.CoreBridge;
 import com.ojilon.javaide.core.model.SourceFile;
 
 /**
- * Basic code editor UI (Task 6) + open/save stubs (Task 7).
- * Classic OOP Android layer; all document state lives in :core.
+ * Host for the tabbed editor (Task 8).
+ * Each tab is an EditorPageFragment bound to a SourceFile.
+ * Syntax highlighting is applied inside each page (Task 9).
  */
 public final class EditorFragment extends Fragment {
 
-    private static final String ARG_FILE_ID = "file_id";
-
-    private EditText codeEditor;
-    private TextView fileNameLabel;
     private MaterialToolbar toolbar;
-
-    @Nullable
-    private String currentFileId;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
+    private EditorPagerAdapter adapter;
 
     @NonNull
     public static EditorFragment newInstance() {
@@ -51,12 +49,21 @@ public final class EditorFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         toolbar = view.findViewById(R.id.editorToolbar);
-        fileNameLabel = view.findViewById(R.id.fileNameLabel);
-        codeEditor = view.findViewById(R.id.codeEditor);
+        tabLayout = view.findViewById(R.id.tabLayout);
+        viewPager = view.findViewById(R.id.viewPager);
+
+        adapter = new EditorPagerAdapter(requireActivity());
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            String fileId = adapter.getFileId(position);
+            SourceFile file = CoreBridge.getDocument(fileId);
+            tab.setText(file != null ? file.getName() : "?");
+        }).attach();
 
         toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
-        // Start with a fresh document
+        // Start with one empty document
         openNew();
     }
 
@@ -66,11 +73,13 @@ public final class EditorFragment extends Fragment {
             openNew();
             return true;
         } else if (id == R.id.action_open) {
-            // Stub: open a sample file
             openSample();
             return true;
         } else if (id == R.id.action_save) {
             saveCurrent();
+            return true;
+        } else if (id == R.id.action_close) {
+            closeCurrent();
             return true;
         }
         return false;
@@ -78,41 +87,68 @@ public final class EditorFragment extends Fragment {
 
     private void openNew() {
         SourceFile file = CoreBridge.openNewDocument();
-        bindFile(file);
-        Toast.makeText(requireContext(), "New file created", Toast.LENGTH_SHORT).show();
+        adapter.addTab(file.getId());
+        viewPager.setCurrentItem(adapter.getTabCount() - 1, true);
+        Toast.makeText(requireContext(), "New tab: " + file.getName(), Toast.LENGTH_SHORT).show();
     }
 
     private void openSample() {
         String sample = ""
+                + "package demo;\n\n"
+                + "/** Sample class for syntax highlighting */\n"
                 + "public class Hello {\n"
                 + "    public static void main(String[] args) {\n"
+                + "        // Print a message\n"
                 + "        System.out.println(\"Hello from Java IDE\");\n"
+                + "        int answer = 42;\n"
                 + "    }\n"
                 + "}\n";
         SourceFile file = CoreBridge.openDocument("Hello.java", sample);
-        bindFile(file);
-        Toast.makeText(requireContext(), "Opened sample: Hello.java", Toast.LENGTH_SHORT).show();
+        adapter.addTab(file.getId());
+        viewPager.setCurrentItem(adapter.getTabCount() - 1, true);
+        Toast.makeText(requireContext(), "Opened: Hello.java", Toast.LENGTH_SHORT).show();
     }
 
     private void saveCurrent() {
-        if (currentFileId == null) {
+        int pos = viewPager.getCurrentItem();
+        if (pos < 0 || pos >= adapter.getTabCount()) {
             Toast.makeText(requireContext(), "Nothing to save", Toast.LENGTH_SHORT).show();
             return;
         }
-        String content = codeEditor.getText() != null ? codeEditor.getText().toString() : "";
-        SourceFile updated = CoreBridge.saveDocument(currentFileId, content);
-        if (updated != null) {
-            fileNameLabel.setText(updated.getName() + " (saved)");
-            Toast.makeText(requireContext(), "Saved: " + updated.getName(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(requireContext(), "Save failed – unknown document", Toast.LENGTH_SHORT).show();
+        // Ask the current page fragment to save
+        Fragment page = getChildFragmentManager()
+                .findFragmentByTag("f" + adapter.getItemId(pos));
+        // ViewPager2 tag is not always reliable; fall back to saving via CoreBridge
+        String fileId = adapter.getFileId(pos);
+        // We need the text from the visible page. Simplest reliable way:
+        // iterate and find the active EditorPageFragment.
+        for (Fragment f : getChildFragmentManager().getFragments()) {
+            if (f instanceof EditorPageFragment && f.isVisible()) {
+                ((EditorPageFragment) f).save();
+                SourceFile updated = CoreBridge.getDocument(fileId);
+                String name = updated != null ? updated.getName() : fileId;
+                Toast.makeText(requireContext(), "Saved: " + name, Toast.LENGTH_SHORT).show();
+                // Refresh tab title
+                TabLayout.Tab tab = tabLayout.getTabAt(pos);
+                if (tab != null && updated != null) {
+                    tab.setText(updated.getName());
+                }
+                return;
+            }
         }
+        Toast.makeText(requireContext(), "Could not find editor page", Toast.LENGTH_SHORT).show();
     }
 
-    private void bindFile(@NonNull SourceFile file) {
-        currentFileId = file.getId();
-        fileNameLabel.setText(file.getName());
-        codeEditor.setText(file.getContent());
-        toolbar.setTitle(file.getName());
+    private void closeCurrent() {
+        int pos = viewPager.getCurrentItem();
+        if (pos < 0 || pos >= adapter.getTabCount()) return;
+
+        String fileId = adapter.getFileId(pos);
+        CoreBridge.closeDocument(fileId);
+        adapter.removeTab(pos);
+
+        if (adapter.getTabCount() == 0) {
+            openNew(); // always keep at least one tab
+        }
     }
 }

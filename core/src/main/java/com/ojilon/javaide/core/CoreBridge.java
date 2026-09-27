@@ -7,30 +7,24 @@ import com.ojilon.javaide.core.log.LogLine;
 import com.ojilon.javaide.core.log.SearchCriteria;
 import com.ojilon.javaide.core.model.DocumentStore;
 import com.ojilon.javaide.core.model.SourceFile;
+import com.ojilon.javaide.core.syntax.JavaTokenizer;
+import com.ojilon.javaide.core.syntax.Token;
 
 import java.util.List;
 
 /**
  * Narrow bridge from Android UI (OOP) into the functional / JNI-ready core.
- *
- * Design goals:
- * - Pure / functional style where possible (static methods, immutable data).
- * - Easy to replace implementation with native (C++) via JNI later.
- * - No Android UI types leak into this layer.
  */
 public final class CoreBridge {
 
-    private CoreBridge() {
-        // no instances
-    }
+    private CoreBridge() {}
 
-    /** Simple health-check / entry point. Later this can become a JNI call. */
     @NonNull
     public static String hello() {
         return "Java IDE core ready (functional layer)";
     }
 
-    // ── Document / editor API (tasks 6–7) ─────────────────────────────────────
+    // ── Document / editor API ────────────────────────────────────────────────
 
     @NonNull
     public static SourceFile openNewDocument() {
@@ -55,6 +49,17 @@ public final class CoreBridge {
     @NonNull
     public static List<SourceFile> listDocuments() {
         return DocumentStore.getInstance().list();
+    }
+
+    public static void closeDocument(@NonNull String id) {
+        DocumentStore.getInstance().close(id);
+    }
+
+    // ── Syntax (task 9) ──────────────────────────────────────────────────────
+
+    @NonNull
+    public static List<Token> tokenizeJava(@NonNull String source) {
+        return JavaTokenizer.tokenize(source);
     }
 
     // ── Log utilities ────────────────────────────────────────────────────────

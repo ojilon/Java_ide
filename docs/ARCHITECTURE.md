@@ -13,53 +13,43 @@
 
 ```
 Java_ide/
-├── app/                          # Android application (OOP)
-│   └── src/main/java/com/ojilon/javaide/
-│       └── ui/
-│           ├── MainActivity
-│           ├── editor/           # EditorFragment + layouts
-│           └── project/
-├── core/                         # Library (functional + JNI-ready)
-│   └── src/main/java/com/ojilon/javaide/core/
-│       ├── CoreBridge            # narrow API for UI
-│       ├── functional/           # pure helpers (StringOps, …)
-│       ├── log/                  # LogLine, SearchCriteria, LogLevel
-│       ├── model/                # SourceFile, DocumentStore
-│       └── jni/                  # NativeBridge (future)
+├── app/
+│   └── ui/
+│       ├── MainActivity
+│       └── editor/
+│           ├── EditorFragment          # tab host
+│           ├── EditorPagerAdapter
+│           ├── EditorPageFragment      # one tab
+│           └── SyntaxHighlighter       # applies spans (UI)
+├── core/
+│   ├── CoreBridge
+│   ├── functional/
+│   ├── log/
+│   ├── model/          # SourceFile, DocumentStore
+│   ├── syntax/         # Token, TokenType, JavaTokenizer (pure)
+│   └── jni/
 └── docs/
-    ├── ROADMAP.md
-    └── ARCHITECTURE.md
 ```
 
-## Editor & document flow (tasks 6–7)
+## Editor & highlighting flow
 
 ```
-EditorFragment (OOP)
-      │
-      │  getText() / setText()
-      ▼
-CoreBridge.openNew() / open(name, content) / save(id, content)
+EditorFragment (tabs)
       │
       ▼
-DocumentStore (in-memory, functional style)
-      │
-      ▼
-SourceFile (immutable: id, name, content)
+EditorPageFragment  ──text──►  SyntaxHighlighter  ──calls──►  CoreBridge.tokenizeJava()
+                                      │                              │
+                                      │                              ▼
+                                      │                       JavaTokenizer (pure)
+                                      ▼
+                               Spannable with ColorSpans
 ```
 
-- UI never mutates a `SourceFile` directly; it always goes through `CoreBridge` / `DocumentStore`.
-- Later a real filesystem or Storage Access Framework implementation can replace the in-memory store without touching the UI.
-
-## Data flow (general)
-
-```
-UI (OOP)  ──calls──►  CoreBridge  ──uses──►  functional / model / log classes
-                              │
-                              └── (future) NativeBridge → libjavaide_core.so
-```
+- Tokenizer is pure Java in `:core` → easy future C++ / JNI port.
+- Coloring (Android-specific) stays in the UI layer.
 
 ## Adding new features
 
-- UI widgets / screens → `app/.../ui/...`
-- Pure algorithms, parsers, models → `core/...` (prefer immutable data + static methods)
-- Anything performance-critical that should become C++ → put the Java side in `core` first, keep the interface stable, then implement native later.
+- UI → `app/.../ui/...`
+- Pure algorithms / models → `core/...`
+- Hot paths that should become native → keep stable Java API in `core` first.
