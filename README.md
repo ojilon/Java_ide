@@ -17,12 +17,11 @@ Modern, clean re-implementation of the Java N-IDE concept for Android.
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — module & design rules
 - **[ICONS.md](ICONS.md)** — launcher icon instructions
 
-## Current status
+## Current status (see docs/ROADMAP.md for detail)
 
-- Foundation (Gradle, modules, icons, first functional ports) ✅
-- Phase 1 (1–5) deferred / handled at compile time
-- **Task 6** – Basic code editor UI ✅
-- **Task 7** – File open / save stubs ✅
+- Tasks 6–9 — editor shell, tabs, tokenizer highlighting ✅
+- Tasks 10–13 — compile API + ECJ frontend + dex/packaging stubs + run flow ✅ (pipeline stops at DEX stub)
+- Tasks 14+ — CMake/native, explorer, editor hardening, real dex/packaging, logcat, formatter, complete — Pending, in priority order
 
 ## Branch
 
