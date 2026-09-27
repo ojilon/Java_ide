@@ -41,7 +41,7 @@ public final class EcjCompiler implements Compiler {
     //   1. ERROR in /tmp/.../Hello.java (at line 3)
     //   2. WARNING in ...
     private static final Pattern DIAG_HEADER = Pattern.compile(
-            "^\\d+\\.\\s+(ERROR|WARNING|INFO|PROBLEM)\s+in\s+(.+?)\s+\(at line\s+(\d+)\)",
+            "^\\d+\\.\\s+(ERROR|WARNING|INFO|PROBLEM)\\s+in\\s+(.+?)\\s+\\(at line\\s+(\\d+)\\)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -112,7 +112,7 @@ public final class EcjCompiler implements Compiler {
             outWriter.flush();
 
             List<Diagnostic> diagnostics = parseDiagnostics(errBuffer.toString());
-            if (opts.isVerbose() && outBuffer.length() > 0) {
+            if (opts.isVerbose() && outBuffer.getBuffer().length() > 0) {
                 diagnostics.add(Diagnostic.info(outBuffer.toString().trim()));
             }
 

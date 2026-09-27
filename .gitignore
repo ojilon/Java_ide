@@ -30,5 +30,8 @@ Thumbs.db
 *.log
 context.txt
 
+# Local-only notes (machine-specific paths, never commit)
+gradle-cheatsheet.md
+
 
 a-java-ide-master/
