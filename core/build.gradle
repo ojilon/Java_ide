@@ -12,7 +12,6 @@ android {
         minSdk 26
         targetSdk 34
 
-        // Consumer ProGuard rules can be added later
         consumerProguardFiles 'consumer-rules.pro'
 
         ndk {
@@ -43,16 +42,17 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // Placeholder for future C++ / JNI backend (easy to expand later)
-    // externalNativeBuild {
-    //     cmake {
-    //         path file("src/main/cpp/CMakeLists.txt")
-    //         version "3.22.1"
-    //     }
-    // }
+    // Packaging: ECJ is pure Java; keep it
+    packaging {
+        resources {
+            excludes += ['META-INF/ECLIPSE_.RSA', 'META-INF/ECLIPSE_.SF']
+        }
+    }
 }
 
 dependencies {
-    // Keep core lean — pure Java / functional helpers + future JNI
     implementation 'androidx.annotation:annotation:1.8.2'
+
+    // Eclipse Compiler for Java — standalone batch compiler
+    implementation 'org.eclipse.jdt:ecj:3.42.0'
 }

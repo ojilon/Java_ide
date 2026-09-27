@@ -2,53 +2,39 @@
 
 ## Guiding principles
 
-1. **No legacy** — nothing from the old AGP 3.x / AOSP / JDK 1.7 tree is copied as-is.
-2. **XML + Java only** (for now).
-3. **Clear split**:
-   - `:app` → Android UI → **OOP**
-   - `:core` → pure logic / models / future native → **functional style** + JNI seams
-4. Hot paths that may move to C++ stay behind narrow, immutable interfaces in `:core`.
+1. **No legacy** from a-java-ide.
+2. **XML + Java**.
+3. **`:app`** = OOP UI · **`:core`** = functional + JNI-ready.
+4. Hot paths stay behind stable interfaces in `:core`.
 
-## Module map
+## Compile pipeline (tasks 10–11)
+
+```
+UI / Build action
+      │
+      ▼
+CoreBridge.compile(CompileRequest)
+      │
+      ▼
+EcjCompiler  ──uses──►  org.eclipse.jdt:ecj (BatchCompiler)
+      │
+      ▼
+CompileResult (diagnostics + class bytes)
+```
+
+- Default backend is now **EcjCompiler** (task 11).
+- Swap with `CoreBridge.setCompiler(...)` if needed.
+- Pure-Java sources work out of the box. Android API compilation needs `android.jar` on the classpath (future).
+
+## Module map (excerpt)
 
 ```
 core/
-  compile/          # Task 10 – pure compile API
-    CompileRequest
-    CompileOptions
-    Diagnostic / DiagnosticSeverity
-    CompiledClass
-    CompileResult
-    Compiler (interface)
-    NotImplementedCompiler (stub)
-  model/            # SourceFile, DocumentStore
-  syntax/           # JavaTokenizer, Token, TokenType
-  functional/
-  log/
-  jni/
-  CoreBridge
+  compile/
+    Compiler / EcjCompiler / NotImplementedCompiler
+    CompileRequest / CompileOptions / CompileResult
+    Diagnostic / CompiledClass
+  model/
+  syntax/
+  ...
 ```
-
-## Compile flow (task 10)
-
-```
-UI / future BuildAction
-        │
-        ▼
-CoreBridge.compile(CompileRequest)
-        │
-        ▼
-Compiler.compile(request)     ← swappable backend
-        │
-        ▼
-CompileResult (success? diagnostics, class bytes)
-```
-
-- Default backend: `NotImplementedCompiler` (returns a clear info diagnostic).
-- Task 11 will supply a real `Compiler` implementation and call `CoreBridge.setCompiler(...)`.
-
-## Adding new features
-
-- UI → `app/.../ui/...`
-- Pure algorithms / models → `core/...`
-- Native candidates → keep stable Java API first, then implement in C++ behind the same interface.

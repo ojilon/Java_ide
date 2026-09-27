@@ -6,68 +6,42 @@ Reply with the **number** of the task you want done next.
 
 ---
 
-## Phase 0 — Foundation (done)
+## Phase 0–2 — Done
 
-| # | Task | Status |
-|---|------|--------|
-| 0.1–0.5 | Gradle, modules, icons, first ports, docs | ✅ Done |
-
----
-
-## Phase 1 — Deferred (mocks / compile-time)
-
-Tasks **1–5** are deferred.
-
----
-
-## Phase 2 — Editor surface (done)
-
-| # | Task | Status |
-|---|------|--------|
-| **6** | Basic code editor UI | ✅ Done |
-| **7** | File open / save stubs | ✅ Done |
-| **8** | Tabbed editor | ✅ Done |
-| **9** | Basic syntax highlighting | ✅ Done |
+Foundation, deferred mocks, editor surface (6–9) ✅
 
 ---
 
 ## Phase 3 — Build & Run pipeline
 
-| # | Task | Detailed plan | Status |
-|---|------|---------------|--------|
-| **10** | Design compile API | Pure interfaces: CompileRequest → CompileResult + Compiler | ✅ Done |
-| **11** | Modern Java compiler frontend | Real backend implementing `Compiler` (e.g. ECJ). | Pending |
-| **12** | Dexing / packaging stubs | Thin wrappers for later `d8` / `r8`. | Pending |
-| **13** | “Run on device” flow | PackageInstaller / launch. | Pending |
+| # | Task | Status |
+|---|------|--------|
+| **10** | Design compile API | ✅ Done |
+| **11** | Modern Java compiler frontend (ECJ) | ✅ Done |
+| **12** | Dexing / packaging stubs | Pending |
+| **13** | “Run on device” flow | Pending |
 
 ---
 
 ## Phase 4 — JNI / C++ readiness
 
-| # | Task | Detailed plan | Status |
-|---|------|---------------|--------|
-| **14** | Enable CMake in `:core` | Minimal `CMakeLists.txt` + stub `.cpp`. | Pending |
-| **15** | First native method | `nativeHello()` end-to-end. | Pending |
-| **16** | Port hot path to C++ | Tokenizer or `LogLine.parse`. | Pending |
-| **17** | Performance notes | Document Java vs native candidates. | Pending |
+| # | Task | Status |
+|---|------|--------|
+| **14** | Enable CMake in `:core` | Pending |
+| **15** | First native method | Pending |
+| **16** | Port hot path to C++ | Pending |
+| **17** | Performance notes | Pending |
 
 ---
 
-## Phase 5 — Polish & extra features
+## Phase 5 — Polish
 
 | # | Task | Status |
 |---|------|--------|
-| **18** | Settings screen | Pending |
-| **19** | Dark / light theme polish | Pending |
-| **20** | Project explorer | Pending |
-| **21** | Live logcat capture | Pending |
-| **22** | Code formatter | Pending |
-| **23** | Basic auto-complete | Pending |
-| **24** | Docs & screenshots | Pending |
-| **25** | CI | Pending |
+| **18–25** | Settings, theme, explorer, logcat, formatter, autocomplete, docs, CI | Pending |
 
 ---
 
 ## How to use
 
-Reply with a number (e.g. `11`). I implement it on `modern-restructure` and push.
+Reply with a number (e.g. `12`).
