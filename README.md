@@ -4,41 +4,29 @@ Modern, clean re-implementation of the Java N-IDE concept for Android.
 
 ## Goals
 
-- **No legacy inheritance** from the original `a-java-ide` (old AGP 3.x, AOSP forks, JDK 1.7 modules, etc.).
+- **No legacy inheritance** from the original `a-java-ide`.
 - Stick with **XML + Java**.
-- Clear separation of concerns:
-  - **`:app`** — Android UI layer (Activities, Fragments, ViewModels, adapters) written in classic **OOP** style.
-  - **`:core`** — background / pure logic written in a more **functional** style, designed for easy later port of selected parts to a **C++ backend via JNI**.
-- Modern Gradle (AGP 8.13.2, Gradle 8.14.x, Java 17, compileSdk 36) borrowed from the setup used in `Wayer` and `Conductino-Android`.
+- Clear separation:
+  - **`:app`** — Android UI (OOP)
+  - **`:core`** — pure / functional logic + future JNI
+- Modern Gradle (AGP 8.13.2, Java 17, compileSdk 36) taken from `Wayer` / `Conductino-Android`.
 
-## Modules
+## Quick links
 
-| Module | Role |
-|--------|------|
-| `:app` | Launcher, UI, Android framework integration (OOP) |
-| `:core` | Functional helpers + log parsing + future JNI bridge |
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** ← **numbered task list** (reply with a number to execute)
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — module & package design
+- **[ICONS.md](ICONS.md)** — how to replace the temporary launcher icons
 
-## Package layout
+## Current status
 
-```
-app/
-  ui/                 ← Activities / Fragments (OOP)
-    editor/           ← source editor UI
-    project/          ← project explorer UI
-core/
-  functional/         ← pure helpers (StringOps, …)
-  log/                ← immutable LogLine + SearchCriteria (modernized)
-  jni/                ← NativeBridge (future C++ seams)
-```
-
-## Icons
-
-Temporary vector adaptive icons are in place so the project builds.  
-See **[ICONS.md](ICONS.md)** for the exact PNG names, densities, and how to replace them.
+- Modern Gradle skeleton ✅
+- Icon placeholders ✅
+- Package structure + first functional ports (log parsing) ✅
+- Docs & full task map ✅
 
 ## Branch
 
-Work happens on `modern-restructure`.
+All work is on **`modern-restructure`**.
 
 ## Build
 
@@ -46,11 +34,4 @@ Work happens on `modern-restructure`.
 ./gradlew :app:assembleDebug
 ```
 
-(First time you may need to run `gradle wrapper` if the binary jar is missing.)
-
-## Status
-
-- Modern Gradle skeleton ✅
-- Icon placeholders + instructions ✅
-- Package structure + first functional ports (log parsing) ✅
-- Next: more selective modern ports / real editor surface
+(You may need to generate the wrapper jar once if it is missing.)
