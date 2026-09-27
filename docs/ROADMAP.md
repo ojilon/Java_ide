@@ -19,7 +19,7 @@ Foundation, editor surface (6–9) ✅
 | **10** | Design compile API | ✅ Done |
 | **11** | Modern Java compiler frontend (ECJ) | ✅ Done |
 | **12** | Dexing / packaging stubs | ✅ Done |
-| **13** | “Run on device” flow | Pending |
+| **13** | “Run on device” flow | ✅ Done |
 
 ---
 
@@ -44,4 +44,4 @@ Foundation, editor surface (6–9) ✅
 
 ## How to use
 
-Reply with a number (e.g. `13`).
+Reply with a number (e.g. `14`).
