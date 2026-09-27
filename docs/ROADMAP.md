@@ -8,7 +8,7 @@ Reply with the **number** of the task you want done next.
 
 ## Phase 0–2 — Done
 
-Foundation, deferred mocks, editor surface (6–9) ✅
+Foundation, editor surface (6–9) ✅
 
 ---
 
@@ -18,7 +18,7 @@ Foundation, deferred mocks, editor surface (6–9) ✅
 |---|------|--------|
 | **10** | Design compile API | ✅ Done |
 | **11** | Modern Java compiler frontend (ECJ) | ✅ Done |
-| **12** | Dexing / packaging stubs | Pending |
+| **12** | Dexing / packaging stubs | ✅ Done |
 | **13** | “Run on device” flow | Pending |
 
 ---
@@ -44,4 +44,4 @@ Foundation, deferred mocks, editor surface (6–9) ✅
 
 ## How to use
 
-Reply with a number (e.g. `12`).
+Reply with a number (e.g. `13`).

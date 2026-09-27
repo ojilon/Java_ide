@@ -6,11 +6,19 @@ import com.ojilon.javaide.core.compile.CompileRequest;
 import com.ojilon.javaide.core.compile.CompileResult;
 import com.ojilon.javaide.core.compile.Compiler;
 import com.ojilon.javaide.core.compile.EcjCompiler;
+import com.ojilon.javaide.core.dex.DexRequest;
+import com.ojilon.javaide.core.dex.DexResult;
+import com.ojilon.javaide.core.dex.Dexer;
+import com.ojilon.javaide.core.dex.StubDexer;
 import com.ojilon.javaide.core.functional.StringOps;
 import com.ojilon.javaide.core.log.LogLine;
 import com.ojilon.javaide.core.log.SearchCriteria;
 import com.ojilon.javaide.core.model.DocumentStore;
 import com.ojilon.javaide.core.model.SourceFile;
+import com.ojilon.javaide.core.packaging.PackageRequest;
+import com.ojilon.javaide.core.packaging.PackageResult;
+import com.ojilon.javaide.core.packaging.Packager;
+import com.ojilon.javaide.core.packaging.StubPackager;
 import com.ojilon.javaide.core.syntax.JavaTokenizer;
 import com.ojilon.javaide.core.syntax.Token;
 
@@ -22,6 +30,8 @@ import java.util.List;
 public final class CoreBridge {
 
     private static volatile Compiler compiler = new EcjCompiler();
+    private static volatile Dexer dexer = new StubDexer();
+    private static volatile Packager packager = new StubPackager();
 
     private CoreBridge() {}
 
@@ -87,6 +97,38 @@ public final class CoreBridge {
     @NonNull
     public static CompileResult compile(@NonNull SourceFile source) {
         return compile(CompileRequest.of(source));
+    }
+
+    // ── Dex API (task 12) ────────────────────────────────────────────────────
+
+    public static void setDexer(@NonNull Dexer newDexer) {
+        dexer = newDexer;
+    }
+
+    @NonNull
+    public static Dexer getDexer() {
+        return dexer;
+    }
+
+    @NonNull
+    public static DexResult dex(@NonNull DexRequest request) {
+        return dexer.dex(request);
+    }
+
+    // ── Package API (task 12) ────────────────────────────────────────────────
+
+    public static void setPackager(@NonNull Packager newPackager) {
+        packager = newPackager;
+    }
+
+    @NonNull
+    public static Packager getPackager() {
+        return packager;
+    }
+
+    @NonNull
+    public static PackageResult packageApk(@NonNull PackageRequest request) {
+        return packager.packageApk(request);
     }
 
     // ── Log utilities ────────────────────────────────────────────────────────

@@ -5,35 +5,33 @@
 1. **No legacy** from a-java-ide.
 2. **XML + Java**.
 3. **`:app`** = OOP UI · **`:core`** = functional + JNI-ready.
-4. Hot paths stay behind stable interfaces in `:core`.
 
-## Compile pipeline (tasks 10–11)
+## Build pipeline (tasks 10–12)
 
 ```
-UI / Build action
+SourceFile(s)
       │
       ▼
-CoreBridge.compile(CompileRequest)
+CoreBridge.compile()  →  EcjCompiler  →  CompileResult (class bytes)
       │
       ▼
-EcjCompiler  ──uses──►  org.eclipse.jdt:ecj (BatchCompiler)
+CoreBridge.dex()      →  Dexer (StubDexer for now)  →  DexResult (dex bytes)
       │
       ▼
-CompileResult (diagnostics + class bytes)
+CoreBridge.packageApk() → Packager (StubPackager) → PackageResult (apk bytes)
 ```
 
-- Default backend is now **EcjCompiler** (task 11).
-- Swap with `CoreBridge.setCompiler(...)` if needed.
-- Pure-Java sources work out of the box. Android API compilation needs `android.jar` on the classpath (future).
+- All steps use immutable request/result types.
+- Backends are swappable (`setCompiler` / `setDexer` / `setPackager`).
+- Real d8/r8 and APK building plug in later without UI changes.
 
-## Module map (excerpt)
+## Packages
 
 ```
 core/
-  compile/
-    Compiler / EcjCompiler / NotImplementedCompiler
-    CompileRequest / CompileOptions / CompileResult
-    Diagnostic / CompiledClass
+  compile/     # ECJ frontend
+  dex/         # DexRequest/Result, Dexer, StubDexer
+  packaging/   # PackageRequest/Result, Packager, StubPackager
   model/
   syntax/
   ...
