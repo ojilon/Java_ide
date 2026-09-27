@@ -21,6 +21,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_run"
+        android:title="Run"
+        android:icon="@android:drawable/ic_media_play"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_close"
         android:title="Close Tab"
         app:showAsAction="never" />

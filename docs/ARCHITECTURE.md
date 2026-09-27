@@ -1,38 +1,27 @@
 # Architecture
 
-## Guiding principles
-
-1. **No legacy** from a-java-ide.
-2. **XML + Java**.
-3. **`:app`** = OOP UI · **`:core`** = functional + JNI-ready.
-
-## Build pipeline (tasks 10–12)
+## Build & run pipeline (tasks 10–13)
 
 ```
-SourceFile(s)
+Editor "Run"
       │
       ▼
-CoreBridge.compile()  →  EcjCompiler  →  CompileResult (class bytes)
+BuildAndRunCoordinator (app, background thread)
       │
-      ▼
-CoreBridge.dex()      →  Dexer (StubDexer for now)  →  DexResult (dex bytes)
-      │
-      ▼
-CoreBridge.packageApk() → Packager (StubPackager) → PackageResult (apk bytes)
+      ├─ CoreBridge.compile()     → EcjCompiler
+      ├─ CoreBridge.dex()         → StubDexer (for now)
+      ├─ CoreBridge.packageApk()  → StubPackager (for now)
+      ├─ ApkInstaller.install()   → PackageInstaller session
+      └─ ApkInstaller.launch()    → launch intent
 ```
 
-- All steps use immutable request/result types.
-- Backends are swappable (`setCompiler` / `setDexer` / `setPackager`).
-- Real d8/r8 and APK building plug in later without UI changes.
+- Core stays free of PackageInstaller; install/launch live in `:app`.
+- Stage progress is reported via `RunStage` + callbacks on the main thread.
+- When real dex/package backends land, the same coordinator works end-to-end.
 
 ## Packages
 
 ```
-core/
-  compile/     # ECJ frontend
-  dex/         # DexRequest/Result, Dexer, StubDexer
-  packaging/   # PackageRequest/Result, Packager, StubPackager
-  model/
-  syntax/
-  ...
+core/run/          # RunRequest, RunResult, RunStage
+app/run/           # ApkInstaller, InstallResultReceiver, BuildAndRunCoordinator
 ```
