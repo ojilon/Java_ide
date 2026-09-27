@@ -2,6 +2,10 @@ package com.ojilon.javaide.core;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.ojilon.javaide.core.compile.CompileRequest;
+import com.ojilon.javaide.core.compile.CompileResult;
+import com.ojilon.javaide.core.compile.Compiler;
+import com.ojilon.javaide.core.compile.NotImplementedCompiler;
 import com.ojilon.javaide.core.functional.StringOps;
 import com.ojilon.javaide.core.log.LogLine;
 import com.ojilon.javaide.core.log.SearchCriteria;
@@ -16,6 +20,8 @@ import java.util.List;
  * Narrow bridge from Android UI (OOP) into the functional / JNI-ready core.
  */
 public final class CoreBridge {
+
+    private static volatile Compiler compiler = new NotImplementedCompiler();
 
     private CoreBridge() {}
 
@@ -55,11 +61,37 @@ public final class CoreBridge {
         DocumentStore.getInstance().close(id);
     }
 
-    // ── Syntax (task 9) ──────────────────────────────────────────────────────
+    // ── Syntax ───────────────────────────────────────────────────────────────
 
     @NonNull
     public static List<Token> tokenizeJava(@NonNull String source) {
         return JavaTokenizer.tokenize(source);
+    }
+
+    // ── Compile API (task 10) ────────────────────────────────────────────────
+
+    /**
+     * Replace the compiler backend (e.g. after task 11 lands a real one).
+     * Thread-safe enough for our use (happens once at startup).
+     */
+    public static void setCompiler(@NonNull Compiler newCompiler) {
+        compiler = newCompiler;
+    }
+
+    @NonNull
+    public static Compiler getCompiler() {
+        return compiler;
+    }
+
+    @NonNull
+    public static CompileResult compile(@NonNull CompileRequest request) {
+        return compiler.compile(request);
+    }
+
+    /** Convenience: compile a single SourceFile with default options. */
+    @NonNull
+    public static CompileResult compile(@NonNull SourceFile source) {
+        return compile(CompileRequest.of(source));
     }
 
     // ── Log utilities ────────────────────────────────────────────────────────

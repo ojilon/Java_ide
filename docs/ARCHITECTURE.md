@@ -5,51 +5,50 @@
 1. **No legacy** — nothing from the old AGP 3.x / AOSP / JDK 1.7 tree is copied as-is.
 2. **XML + Java only** (for now).
 3. **Clear split**:
-   - `:app` → Android UI, Activities, Fragments, adapters → **OOP**
-   - `:core` → pure logic, parsing, models, future native → **functional style** + JNI seams
-4. Everything that might later move to C++ lives behind narrow, immutable interfaces in `:core`.
+   - `:app` → Android UI → **OOP**
+   - `:core` → pure logic / models / future native → **functional style** + JNI seams
+4. Hot paths that may move to C++ stay behind narrow, immutable interfaces in `:core`.
 
 ## Module map
 
 ```
-Java_ide/
-├── app/
-│   └── ui/
-│       ├── MainActivity
-│       └── editor/
-│           ├── EditorFragment          # tab host
-│           ├── EditorPagerAdapter
-│           ├── EditorPageFragment      # one tab
-│           └── SyntaxHighlighter       # applies spans (UI)
-├── core/
-│   ├── CoreBridge
-│   ├── functional/
-│   ├── log/
-│   ├── model/          # SourceFile, DocumentStore
-│   ├── syntax/         # Token, TokenType, JavaTokenizer (pure)
-│   └── jni/
-└── docs/
+core/
+  compile/          # Task 10 – pure compile API
+    CompileRequest
+    CompileOptions
+    Diagnostic / DiagnosticSeverity
+    CompiledClass
+    CompileResult
+    Compiler (interface)
+    NotImplementedCompiler (stub)
+  model/            # SourceFile, DocumentStore
+  syntax/           # JavaTokenizer, Token, TokenType
+  functional/
+  log/
+  jni/
+  CoreBridge
 ```
 
-## Editor & highlighting flow
+## Compile flow (task 10)
 
 ```
-EditorFragment (tabs)
-      │
-      ▼
-EditorPageFragment  ──text──►  SyntaxHighlighter  ──calls──►  CoreBridge.tokenizeJava()
-                                      │                              │
-                                      │                              ▼
-                                      │                       JavaTokenizer (pure)
-                                      ▼
-                               Spannable with ColorSpans
+UI / future BuildAction
+        │
+        ▼
+CoreBridge.compile(CompileRequest)
+        │
+        ▼
+Compiler.compile(request)     ← swappable backend
+        │
+        ▼
+CompileResult (success? diagnostics, class bytes)
 ```
 
-- Tokenizer is pure Java in `:core` → easy future C++ / JNI port.
-- Coloring (Android-specific) stays in the UI layer.
+- Default backend: `NotImplementedCompiler` (returns a clear info diagnostic).
+- Task 11 will supply a real `Compiler` implementation and call `CoreBridge.setCompiler(...)`.
 
 ## Adding new features
 
 - UI → `app/.../ui/...`
 - Pure algorithms / models → `core/...`
-- Hot paths that should become native → keep stable Java API in `core` first.
+- Native candidates → keep stable Java API first, then implement in C++ behind the same interface.
