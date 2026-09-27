@@ -9,20 +9,20 @@ Modern, clean re-implementation of the Java N-IDE concept for Android.
 - Clear separation:
   - **`:app`** — Android UI (OOP)
   - **`:core`** — pure / functional logic + future JNI
-- Modern Gradle (AGP 8.13.2, Java 17, compileSdk 36) taken from `Wayer` / `Conductino-Android`.
+- Modern Gradle (AGP 8.13.2, Java 17, compileSdk 36).
 
 ## Quick links
 
-- **[docs/ROADMAP.md](docs/ROADMAP.md)** ← **numbered task list** (reply with a number to execute)
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — module & package design
-- **[ICONS.md](ICONS.md)** — how to replace the temporary launcher icons
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** ← numbered task list (reply with a number)
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — module & design rules
+- **[ICONS.md](ICONS.md)** — launcher icon instructions
 
 ## Current status
 
-- Modern Gradle skeleton ✅
-- Icon placeholders ✅
-- Package structure + first functional ports (log parsing) ✅
-- Docs & full task map ✅
+- Foundation (Gradle, modules, icons, first functional ports) ✅
+- Phase 1 (1–5) deferred / handled at compile time
+- **Task 6** – Basic code editor UI ✅
+- **Task 7** – File open / save stubs ✅
 
 ## Branch
 
@@ -33,5 +33,3 @@ All work is on **`modern-restructure`**.
 ```bash
 ./gradlew :app:assembleDebug
 ```
-
-(You may need to generate the wrapper jar once if it is missing.)

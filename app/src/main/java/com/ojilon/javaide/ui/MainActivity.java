@@ -2,30 +2,25 @@ package com.ojilon.javaide.ui;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import com.ojilon.javaide.databinding.ActivityMainBinding;
-import com.ojilon.javaide.core.CoreBridge;
+import com.ojilon.javaide.R;
+import com.ojilon.javaide.ui.editor.EditorFragment;
 
 /**
  * Android UI entry point — classic OOP style.
- * Talks to the functional / JNI-ready core only through narrow interfaces.
+ * Hosts the editor (and later other screens).
  */
 public final class MainActivity extends AppCompatActivity {
-
-    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_main);
 
-        String status = CoreBridge.hello();
-        binding.statusText.setText(status);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_container, EditorFragment.newInstance())
+                    .commit();
+        }
     }
 }

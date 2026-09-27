@@ -1,9 +1,12 @@
 package com.ojilon.javaide.core;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.ojilon.javaide.core.functional.StringOps;
 import com.ojilon.javaide.core.log.LogLine;
 import com.ojilon.javaide.core.log.SearchCriteria;
+import com.ojilon.javaide.core.model.DocumentStore;
+import com.ojilon.javaide.core.model.SourceFile;
 
 import java.util.List;
 
@@ -27,7 +30,34 @@ public final class CoreBridge {
         return "Java IDE core ready (functional layer)";
     }
 
-    // ── Log utilities (modernized from a-java-ide logcat logic) ──────────────
+    // ── Document / editor API (tasks 6–7) ─────────────────────────────────────
+
+    @NonNull
+    public static SourceFile openNewDocument() {
+        return DocumentStore.getInstance().openNew();
+    }
+
+    @NonNull
+    public static SourceFile openDocument(@NonNull String name, @NonNull String content) {
+        return DocumentStore.getInstance().open(name, content);
+    }
+
+    @Nullable
+    public static SourceFile saveDocument(@NonNull String id, @NonNull String content) {
+        return DocumentStore.getInstance().save(id, content);
+    }
+
+    @Nullable
+    public static SourceFile getDocument(@NonNull String id) {
+        return DocumentStore.getInstance().get(id);
+    }
+
+    @NonNull
+    public static List<SourceFile> listDocuments() {
+        return DocumentStore.getInstance().list();
+    }
+
+    // ── Log utilities ────────────────────────────────────────────────────────
 
     @NonNull
     public static LogLine parseLogLine(@NonNull String rawLine) {
@@ -46,13 +76,7 @@ public final class CoreBridge {
     // ── String helpers ───────────────────────────────────────────────────────
 
     @NonNull
-    public static String trimOrEmpty(@androidx.annotation.Nullable String input) {
+    public static String trimOrEmpty(@Nullable String input) {
         return StringOps.trimOrEmpty(input);
     }
-
-    // Future: load native library and declare native methods here, e.g.
-    // static {
-    //     System.loadLibrary("javaide_core");
-    // }
-    // public static native String nativeHello();
 }
